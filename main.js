@@ -9,4 +9,10 @@ for (let i of [1, 2, 3]) {
     console.log(i)
 }
 
-let x = <MyComponent a={'123'} />
+let a = <div name='x' id='idx'>
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
+console.log('a', a)
+document.body.appendChild(a)
