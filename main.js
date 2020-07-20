@@ -3,7 +3,13 @@ import { ToyReact, Component } from './ToyReact'
 
 class MyComponent extends Component {
     render() {
-        return <div><span>hello</span><span>world</span></div>
+        return <div>
+            <span>hello</span>
+            <span>world</span>
+            {
+                this.children
+            }
+        </div>
     }
     // setAttribute(name, value) {
     //     this[name] = value
@@ -22,6 +28,7 @@ let a = <MyComponent name='x' id='idx'>
     {/* <span>Hello</span>
     <span>World</span>
     <span>!</span> */}
+    <div>children</div>
 </MyComponent>
 console.log('a', a)
 ToyReact.render(
