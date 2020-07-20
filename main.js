@@ -1,18 +1,30 @@
 console.log('main.js')
-import { ToyReact } from './ToyReact'
+import { ToyReact, Component } from './ToyReact'
 
-class MyComponent {
-
+class MyComponent extends Component {
+    render() {
+        return <div><span>hello</span><span>world</span></div>
+    }
+    // setAttribute(name, value) {
+    //     this[name] = value
+    // }
+    // mountTo(parent) {
+    //     let vdom = this.render();
+    //     vdom.mountTo(parent)
+    // }
 }
 
 for (let i of [1, 2, 3]) {
     console.log(i)
 }
 
-let a = <div name='x' id='idx'>
-    <span>Hello</span>
+let a = <MyComponent name='x' id='idx'>
+    {/* <span>Hello</span>
     <span>World</span>
-    <span>!</span>
-</div>
+    <span>!</span> */}
+</MyComponent>
 console.log('a', a)
-document.body.appendChild(a)
+ToyReact.render(
+    a,
+    document.body
+)
