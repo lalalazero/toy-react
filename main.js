@@ -9,6 +9,9 @@ class MyComponent extends Component {
             {
                 this.children
             }
+            {
+                true
+            }
         </div>
     }
     // setAttribute(name, value) {
