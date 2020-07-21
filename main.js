@@ -11,7 +11,7 @@ class Square extends Component {
     render() {
         return (
             <button className="square" onClick={() => this.setState({ value: 'x' })}>
-                {this.props.value}
+                {this.state.value ? this.state.value : this.props.value}
             </button>
         );
     }

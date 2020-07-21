@@ -34,8 +34,15 @@ export let ToyReact = {
     },
     render(vdom, element) {
         console.log('ToyReact render...')
-        vdom.mountTo(element)
-        // element.appendChild(vdom)
+        let range = document.createRange();
+        if (element.children.length) {
+            range.setStartAfter(element.lastChild)
+            range.setEndAfter(element.lastChild)
+        } else {
+            range.setStart(element, 0)
+            range.setEnd(element, 0)
+        }
+        vdom.mountTo(range)
     }
 }
 
@@ -45,10 +52,10 @@ class ElementWrapper {
     }
     setAttribute(name, value) {
         if (name.match(/^on([\s\S]+)$/)) {
-            console.log('element wrapper..')
-            console.log(RegExp.$1)
+            // console.log('element wrapper..')
+            // console.log(RegExp.$1)
             let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase())
-            console.log('eventName', eventName)
+            // console.log('eventName', eventName)
             this.root.addEventListener(eventName, value)
         }
         if (name === 'className') {
@@ -57,10 +64,19 @@ class ElementWrapper {
         this.root.setAttribute(name, value)
     }
     appendChild(vchild) {
-        vchild.mountTo(this.root)
+        let range = document.createRange();
+        if (this.root.children.length) {
+            range.setStartAfter(this.root.lastChild)
+            range.setEndAfter(this.root.lastChild)
+        } else {
+            range.setStart(this.root, 0)
+            range.setEnd(this.root, 0)
+        }
+        vchild.mountTo(range)
     }
-    mountTo(parent) {
-        parent.appendChild(this.root)
+    mountTo(range) {
+        range.deleteContents()
+        range.insertNode(this.root)
     }
 }
 
@@ -68,8 +84,9 @@ class TextWrapper {
     constructor(content) {
         this.root = document.createTextNode(content)
     }
-    mountTo(parent) {
-        parent.appendChild(this.root)
+    mountTo(range) {
+        range.deleteContents()
+        range.insertNode(this.root)
     }
 }
 
@@ -81,14 +98,24 @@ export class Component {
     }
     setAttribute(name, value) {
         if (name.match(/^on([\s\S]+)$/)) {
-            console.log(RegExp.$1)
+            // console.log(RegExp.$1)
         }
         this[name] = value
         this.props[name] = value
     }
-    mountTo(parent) {
+    mountTo(range) {
+        this.range = range
+        this.update()
+    }
+    update() {
+        let placeHolder = document.createComment("placeholder")
+        let range2 = document.createRange()
+        range2.setStart(this.range.endContainer, this.range.endOffset)
+        range2.setEnd(this.range.endContainer, this.range.endOffset)
+        range2.insertNode(placeHolder)
+        this.range.deleteContents()
         let vdom = this.render()
-        vdom.mountTo(parent)
+        vdom.mountTo(this.range)
     }
     appendChild(vchild) {
         this.children.push(vchild)
@@ -111,5 +138,6 @@ export class Component {
         }
         merge(this.state, state);
         console.log(this.state)
+        this.update()
     }
 }
