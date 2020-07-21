@@ -1,39 +1,56 @@
 console.log('main.js')
 import { ToyReact, Component } from './ToyReact'
 
-class MyComponent extends Component {
+class Square extends Component {
     render() {
-        return <div>
-            <span>hello</span>
-            <span>world</span>
-            {
-                this.children
-            }
-            {
-                true
-            }
-        </div>
+        return (
+            <button className="square" onClick={this.props.onClick}>
+                {this.props.value}
+            </button>
+        );
     }
-    // setAttribute(name, value) {
-    //     this[name] = value
-    // }
-    // mountTo(parent) {
-    //     let vdom = this.render();
-    //     vdom.mountTo(parent)
-    // }
+
 }
+
+class Board extends Component {
+    renderSquare(i) {
+        return (
+            <Square
+                value={i}
+                onClick={() => alert('click')}
+            />
+        );
+    }
+    render() {
+        return (
+            <div>
+                <div className="board-row">
+                    {this.renderSquare(0)}
+                    {this.renderSquare(1)}
+                    {this.renderSquare(2)}
+                </div>
+                <div className="board-row">
+                    {this.renderSquare(3)}
+                    {this.renderSquare(4)}
+                    {this.renderSquare(5)}
+                </div>
+                <div className="board-row">
+                    {this.renderSquare(6)}
+                    {this.renderSquare(7)}
+                    {this.renderSquare(8)}
+                </div>
+            </div>
+        );
+    }
+}
+
 
 for (let i of [1, 2, 3]) {
     console.log(i)
 }
 
-let a = <MyComponent name='x' id='idx'>
-    {/* <span>Hello</span>
-    <span>World</span>
-    <span>!</span> */}
-    <div>children</div>
-</MyComponent>
-console.log('a', a)
+let a = <Board>
+</Board>
 ToyReact.render(
     a,
     document.body

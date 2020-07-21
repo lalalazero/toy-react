@@ -44,6 +44,13 @@ class ElementWrapper {
         this.root = document.createElement(type)
     }
     setAttribute(name, value) {
+        if (name.match(/^on([\s\S]+)$/)) {
+            console.log('element wrapper..')
+            console.log(RegExp.$1)
+            let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase())
+            console.log('eventName', eventName)
+            this.root.addEventListener(eventName, value)
+        }
         this.root.setAttribute(name, value)
     }
     appendChild(vchild) {
@@ -66,9 +73,15 @@ class TextWrapper {
 export class Component {
     constructor() {
         this.children = []
+        this.props = Object.create(null)
+
     }
     setAttribute(name, value) {
+        if (name.match(/^on([\s\S]+)$/)) {
+            console.log(RegExp.$1)
+        }
         this[name] = value
+        this.props[name] = value
     }
     mountTo(parent) {
         let vdom = this.render()
