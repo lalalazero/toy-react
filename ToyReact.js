@@ -48,21 +48,21 @@ export let ToyReact = {
         vdom.mountTo(range)
     }
 }
-
+let childrenSymbol = Symbol("children")
 class ElementWrapper {
     constructor(type) {
         this.type = type
         this.props = Object.create(null)
-        this.children = []
+        this[childrenSymbol] = []
+        // this.children = []
+        // this.childrenInternal = []
         // this.root = document.createElement(type)
     }
     get vdom() {
-        let vChildren = this.children.map(child => child.vdom)
-        return {
-            type: this.type,
-            props: this.props,
-            children: vChildren
-        }
+        return this;
+    }
+    get children() {
+        return this[childrenSymbol].map(child => child.vdom)
     }
     setAttribute(name, value) {
 
@@ -80,7 +80,7 @@ class ElementWrapper {
         // this.root.setAttribute(name, value)
     }
     appendChild(vchild) {
-        this.children.push(vchild)
+        this[childrenSymbol].push(vchild)
         // let range = document.createRange();
         // if (this.root.children.length) {
         //     range.setStartAfter(this.root.lastChild)
@@ -133,11 +133,12 @@ class TextWrapper {
         this.root = document.createTextNode(content)
     }
     get vdom() {
-        return {
-            type: '#text',
-            children: [],
-            props: this.props
-        }
+        return this;
+        // return {
+        //     type: '#text',
+        //     children: [],
+        //     props: this.props
+        // }
     }
     mountTo(range) {
         this.range = range
