@@ -56,6 +56,14 @@ class ElementWrapper {
         this.children = []
         // this.root = document.createElement(type)
     }
+    get vdom() {
+        let vChildren = this.children.map(child => child.vdom)
+        return {
+            type: this.type,
+            props: this.props,
+            children: vChildren
+        }
+    }
     setAttribute(name, value) {
 
         this.props[name] = value
@@ -123,6 +131,13 @@ class TextWrapper {
         this.children = []
         this.props = Object.create(null)
         this.root = document.createTextNode(content)
+    }
+    get vdom() {
+        return {
+            type: '#text',
+            children: [],
+            props: this.props
+        }
     }
     mountTo(range) {
         this.range = range
@@ -257,6 +272,9 @@ export class Component {
         }
         this.vdom = vdom
 
+    }
+    get vdom() {
+        return this.render().vdom
     }
     appendChild(vchild) {
         this.children.push(vchild)
