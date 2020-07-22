@@ -51,35 +51,68 @@ export let ToyReact = {
 
 class ElementWrapper {
     constructor(type) {
-        this.root = document.createElement(type)
+        this.type = type
+        this.props = Object.create(null)
+        this.children = []
+        // this.root = document.createElement(type)
     }
     setAttribute(name, value) {
-        if (name.match(/^on([\s\S]+)$/)) {
-            // console.log('element wrapper..')
-            // console.log(RegExp.$1)
-            let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase())
-            // console.log('eventName', eventName)
-            this.root.addEventListener(eventName, value)
-        }
-        if (name === 'className') {
-            name = 'class'
-        }
-        this.root.setAttribute(name, value)
+
+        this.props[name] = value
+        // if (name.match(/^on([\s\S]+)$/)) {
+        //     // console.log('element wrapper..')
+        //     // console.log(RegExp.$1)
+        //     let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase())
+        //     // console.log('eventName', eventName)
+        //     this.root.addEventListener(eventName, value)
+        // }
+        // if (name === 'className') {
+        //     name = 'class'
+        // }
+        // this.root.setAttribute(name, value)
     }
     appendChild(vchild) {
-        let range = document.createRange();
-        if (this.root.children.length) {
-            range.setStartAfter(this.root.lastChild)
-            range.setEndAfter(this.root.lastChild)
-        } else {
-            range.setStart(this.root, 0)
-            range.setEnd(this.root, 0)
-        }
-        vchild.mountTo(range)
+        this.children.push(vchild)
+        // let range = document.createRange();
+        // if (this.root.children.length) {
+        //     range.setStartAfter(this.root.lastChild)
+        //     range.setEndAfter(this.root.lastChild)
+        // } else {
+        //     range.setStart(this.root, 0)
+        //     range.setEnd(this.root, 0)
+        // }
+        // vchild.mountTo(range)
     }
     mountTo(range) {
         range.deleteContents()
-        range.insertNode(this.root)
+        let element = document.createElement(this.type)
+
+        for (let name in this.props) {
+            let value = this.props[name]
+            element.setAttribute(name, value)
+            if (name.match(/^on([\s\S]+)$/)) {
+                let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase())
+                element.addEventListener(eventName, value)
+            }
+            if (name === 'className') {
+                name = 'class'
+            }
+            element.setAttribute(name, value)
+        }
+
+        for (let child of this.children) {
+            let range = document.createRange()
+            if (element.children.length) {
+                range.setStartAfter(element.lastChild)
+                range.setEndAfter(element.lastChild)
+            } else {
+                range.setStart(element, 0)
+                range.setEnd(element, 0)
+            }
+            child.mountTo(range)
+        }
+
+        range.insertNode(element)
     }
 }
 
