@@ -144,12 +144,12 @@ export class Component {
         this.update()
     }
     update() {
-        let placeHolder = document.createComment("placeholder")
-        let range2 = document.createRange()
-        range2.setStart(this.range.endContainer, this.range.endOffset)
-        range2.setEnd(this.range.endContainer, this.range.endOffset)
-        range2.insertNode(placeHolder)
-        this.range.deleteContents()
+        // let placeHolder = document.createComment("placeholder")
+        // let range2 = document.createRange()
+        // range2.setStart(this.range.endContainer, this.range.endOffset)
+        // range2.setEnd(this.range.endContainer, this.range.endOffset)
+        // range2.insertNode(placeHolder)
+        // this.range.deleteContents()
         let vdom = this.render()
         vdom.mountTo(this.range)
     }
