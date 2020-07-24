@@ -36,7 +36,6 @@ export let ToyReact = {
         return element
     },
     render(vdom, element) {
-        console.log('ToyReact render...')
         let range = document.createRange();
         if (element.children.length) {
             range.setStartAfter(element.lastChild)
@@ -48,62 +47,31 @@ export let ToyReact = {
         vdom.mountTo(range)
     }
 }
-let childrenSymbol = Symbol("children")
 class ElementWrapper {
     constructor(type) {
         this.type = type
         this.props = Object.create(null)
-        this[childrenSymbol] = []
         this.children = []
-        // this.children = []
-        // this.childrenInternal = []
-        // this.root = document.createElement(type)
     }
     get vdom() {
         return this;
     }
-    // get children() {
-    //     return this[childrenSymbol].map(child => child.vdom)
-    // }
     setAttribute(name, value) {
 
         this.props[name] = value
-        // if (name.match(/^on([\s\S]+)$/)) {
-        //     // console.log('element wrapper..')
-        //     // console.log(RegExp.$1)
-        //     let eventName = RegExp.$1.replace(/^[\s\S]/, (s) => s.toLowerCase())
-        //     // console.log('eventName', eventName)
-        //     this.root.addEventListener(eventName, value)
-        // }
-        // if (name === 'className') {
-        //     name = 'class'
-        // }
-        // this.root.setAttribute(name, value)
     }
     appendChild(vchild) {
-        this[childrenSymbol].push(vchild)
         this.children.push(vchild.vdom)
-        // let range = document.createRange();
-        // if (this.root.children.length) {
-        //     range.setStartAfter(this.root.lastChild)
-        //     range.setEndAfter(this.root.lastChild)
-        // } else {
-        //     range.setStart(this.root, 0)
-        //     range.setEnd(this.root, 0)
-        // }
-        // vchild.mountTo(range)
     }
     mountTo(range) {
         this.range = range
-        let placeHolder = document.createComment('placeholder')
-        let endRange = document.createRange();
-        endRange.setStart(range.endContainer, range.endOffset)
-        endRange.setEnd(range.endContainer, range.endOffset)
-        endRange.insertNode(placeHolder)
-
-
         range.deleteContents()
         let element = document.createElement(this.type)
+        let placeholder = document.createComment("placeholder");
+        let endRange = document.createRange();
+        endRange.setStart(range.endContainer, range.endOffset);
+        endRange.setEnd(range.endContainer, range.endOffset);
+        endRange.insertNode(placeholder);
 
         for (let name in this.props) {
             let value = this.props[name]
@@ -143,11 +111,6 @@ class TextWrapper {
     }
     get vdom() {
         return this;
-        // return {
-        //     type: '#text',
-        //     children: [],
-        //     props: this.props
-        // }
     }
     mountTo(range) {
         this.range = range
@@ -166,10 +129,6 @@ export class Component {
         return this.constructor.name
     }
     setAttribute(name, value) {
-        if (name.match(/^on([\s\S]+)$/)) {
-            // console.log(RegExp.$1)
-        }
-        this[name] = value
         this.props[name] = value
     }
     mountTo(range) {
@@ -177,40 +136,34 @@ export class Component {
         this.update()
     }
     update() {
-        // let placeHolder = document.createComment("placeholder")
-        // let range2 = document.createRange()
-        // range2.setStart(this.range.endContainer, this.range.endOffset)
-        // range2.setEnd(this.range.endContainer, this.range.endOffset)
-        // range2.insertNode(placeHolder)
         // this.range.deleteContents()
+        // let placeHolder = document.createComment("placeholder")
+        // let endRange = document.createRange()
+        // endRange.setStart(this.range.endContainer, this.range.endOffset)
+        // endRange.setEnd(this.range.endContainer, this.range.endOffset)
+        // endRange.insertNode(placeHolder)
+
+        
         let vdom = this.vdom
         if (this.oldVdom) {
-            console.log('new vdom')
-            console.log(vdom)
-            console.log('old vdom')
-            console.log(this.oldVdom)
 
             let isSameNode = (node1, node2) => {
-                if (!node1 || !node2) {
-                    return false
-                }
+                
                 if (node1.type !== node2.type) {
-                    console.log('isSameNode false 1', node1, node2)
                     return false
                 }
 
                 if (Object.keys(node1.props).length !== Object.keys(node2.props).length) {
-                    console.log('isSameNode false 2')
                     return false
                 }
 
                 for (let name in node1.props) {
 
-                    if (typeof node1.props[name] === 'function'
-                        && typeof node2.props[name] === 'function'
-                        && node1.props[name].toString() === node2.props[name].toString()) {
-                        continue
-                    }
+                    // if (typeof node1.props[name] === 'function'
+                    //     && typeof node2.props[name] === 'function'
+                    //     && node1.props[name].toString() === node2.props[name].toString()) {
+                    //     continue
+                    // }
 
                     if (typeof node1.props[name] === 'object'
                         && typeof node2.props[name] === 'object'
@@ -220,7 +173,6 @@ export class Component {
 
 
                     if (node1.props[name] !== node2.props[name]) {
-                        console.log('isSameNode false 3')
                         return false
                     }
                 }
@@ -229,12 +181,10 @@ export class Component {
 
             let isSameTree = (node1, node2) => {
                 if (!isSameNode(node1, node2)) {
-                    console.log('isSameTree log 1 false')
                     return false
                 }
 
-                if (!node1.children.length !== node2.children.length) {
-                    console.log('isSameTree log 2 false')
+                if (node1.children.length !== node2.children.length) {
                     return false
                 }
 
@@ -249,17 +199,11 @@ export class Component {
 
             let replace = (newTree, oldTree) => {
                 if (isSameTree(newTree, oldTree)) {
-                    console.log('replace 1')
                     return
                 }
 
                 if (!isSameNode(newTree, oldTree)) {
-                    console.log('replace 2')
-                    console.log(newTree, oldTree)
-                    console.log('=====')
-                    if (oldTree.range) {
-                        newTree.mountTo(oldTree.range)
-                    }
+                    newTree.mountTo(oldTree.range)
                 } else {
                     for (let i = 0; i < newTree.children.length; i++) {
                         replace(newTree.children[i], oldTree.children[i])
@@ -268,15 +212,12 @@ export class Component {
             }
 
             if (isSameTree(vdom, this.oldVdom)) {
-                console.log('isSameTree')
                 return
             }
 
             if (!isSameNode(vdom, this.oldVdom)) {
-                console.log('isSameNode false')
                 vdom.mountTo(this.oldVdom.range)
             } else {
-                console.log('replace...')
                 replace(vdom, this.oldVdom)
             }
         } else {
@@ -313,7 +254,6 @@ export class Component {
             this.state = {};
         }
         merge(this.state, state);
-        console.log(this.state)
         this.update()
     }
 }
