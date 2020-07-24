@@ -114,6 +114,10 @@ class Game extends Component {
                         squares={current.squares}
                         onClick={i => this.handleClick(i)}
                     />
+                    {/* <div className='game-info'>
+                        <div>{status}</div>
+                        <ol>{moves}</ol>
+                    </div> */}
                 </div>
             </div>
         );
